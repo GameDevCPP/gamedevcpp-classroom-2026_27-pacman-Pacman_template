@@ -3,11 +3,11 @@
 
 ## The Entity Component Model
 
-It's time to bring in the big-guns, standard inheritance and OO can only get us so far. Having a huge inheritance tree for all of our entities would become infeasible to write and maintain, and such we will now adopt the ECM pattern. This will be covered a lecture, here we will focus only on the implementation.
+It's time to bring in the big-guns, standard inheritance and OO can only get us so far. Having a huge inheritance tree for all of our entities would become infeasible to write and maintain, and such we will now adopt the ECM pattern. This will be covered in a lecture, here we will focus only on the implementation.
 
 ### The ECM Library
 
-The code we are about to write will be generic in nature, and we will want to use it again, so we will spin it out to it's own library.
+The code we are about to write will be generic in nature, and we will want to use it again, so we will spin it out to its own library.
 In case you've forgotten, here's the CMake: Remember to add it to the linked libraries of our lab executable too.
 
 ```CMake
@@ -141,7 +141,7 @@ The only complexity to note is the constructor -- which passes the calling entit
 
 ## Adding a component
 
-So how do we add a shape component to an entity? There are many different approaches to this, the key is to to remember this happens at runtime. Components can be dynamically added and removed to entities. Therefore some of the usual methods you may think won't work.
+So how do we add a shape component to an entity? There are many different approaches to this, the key is to remember this happens at runtime. Components can be dynamically added and removed to entities. Therefore some of the usual methods you may think won't work.
 
 The approach we will take is to go down (but not too far) the templated code route. Take a gander at this crazy thing:
 
@@ -181,7 +181,6 @@ The extra template we had in the ShapeComponent is unrelated to this process. Th
 It's time to kill off our original Entity classes for Ghosts and the player that were in the pacman code. We may need some of the code in there, so instead of deleting the files, just change any `#includes` pointing to them to point to `ecm.h` instead.
 
 Creating Entities now follows this process:
-{% raw  %}
 
 ```cpp
 //pacman.cpp
@@ -217,7 +216,6 @@ void GameScene::load() {
  ...
 ```
 
-{% endraw %}
 This should be all we need to get the game running again, but with one
 problem - things aren't moving any more.
 
@@ -226,12 +224,12 @@ problem - things aren't moving any more.
 
 ### Building More components
 
-We've got a shape component that let's things be drawn. We need game
+We've got a shape component that lets things be drawn. We need game
 logic and movement next.
 
 #### Actor Movement Component
 
-For moving things around we will define 3 components. A base "Actor Movement" Component that has the generic methods and properties such as `Move()` and `_speed`. From there we will inherit to two seperate components `PlayerMovementComponent` and `EnemyAIComponent`. The first will contain the keyboard controls to move the play, the second will contain the AI for the ghosts.
+For moving things around we will define 3 components. A base "Actor Movement" Component that has the generic methods and properties such as `Move()` and `_speed`. From there we will inherit to two separate components `PlayerMovementComponent` and `EnemyAIComponent`. The first will contain the keyboard controls to move the player, the second will contain the AI for the ghosts.
 
 I'll give you the complete listing for the base Component:
 
@@ -358,7 +356,7 @@ std::shared_ptr<T> addComponent(Targs... params) {
 }
 ```
 
-This function returns a `shared_ptr` to the newly created component, so we can access it and it's properties. There will be times later on in the code where we need to retrieve certain components from an Entity, unless we keep the original `shared_ptr` around, we need a new mechanism.
+This function returns a `shared_ptr` to the newly created component, so we can access it and its properties. There will be times later on in the code where we need to retrieve certain components from an Entity, unless we keep the original `shared_ptr` around, we need a new mechanism.
 
 What we want is something like this:
 
@@ -378,7 +376,7 @@ But how do we build this?
 
 Retrieving or finding components of a certain type can be done in a few ways. To do this we need a way to tell what type a component is. The simple way is to have a string or numeric identifier as a property on each component type. Then a simple search through all the components on an entity for the value we need. This would require us adding code into every component class we have made -- not good (but not a bad idea).
 
-Fortunately, the C++ runtime has us covered for this, with a very handy function: `typeid()`. This is part of the Run-Time-Type-Information (RTTI) capabilites of the compiler, there are arguments for and against the performance cost of enabling this. It makes our lives easy so we'll take it for now and make a fake promise to ourselves to come up with something better in the future.
+Fortunately, the C++ runtime has us covered for this, with a very handy function: `typeid()`. This is part of the Run-Time-Type-Information (RTTI) capabilities of the compiler, there are arguments for and against the performance cost of enabling this. It makes our lives easy so we'll take it for now and make a fake promise to ourselves to come up with something better in the future.
 
 `typeid()` returns an arbitrary number, so it can't tell us outright what type of class an object is, but we can compare it with the id of a known class to discover this. So our process to find components of a given type is to loop through all components on an entity and compare the `typeid()` with the `typeid()` of the type we want. When we find a component that matches, we add it to a vector that we will return.
 
@@ -410,7 +408,7 @@ RTTI has another method that can save us here, you may have seen it in use in ot
 Here it is:
 
 ```cpp
-//ecm.h - getCompatibleComponent$T>()"
+//ecm.h - GetCompatibleComponent<T>()
 // Will return a T component, or anything derived from a T component.
 template <typename T>
 const std::vector<std::shared_ptr<T>> GetCompatibleComponent() {

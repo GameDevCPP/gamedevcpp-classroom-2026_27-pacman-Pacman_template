@@ -1,5 +1,5 @@
 
-# PacMan - part 3 (AI)"
+# PacMan - part 3 (AI)
 
 AI will be covered in detail in later labs, for this we will be using a very basic state-machine and super simple path-finding. You may have noticed that we have brought in the level system library within the ActorMovementComponent. You should have already altered the CMake to link against this. We will be using the Level system to feed the Ghost AI with information about the level.
 
@@ -16,7 +16,7 @@ void GameScene::load() {
 }
 
 void GameScene::render() {
-  ls::render(Renderer::getWindow());
+  ls::Render(Renderer::getWindow());
   ...
 }
 ```
@@ -29,7 +29,7 @@ Easily done, thanks to our well built level system. What we can do now is use th
 //"pacman.cpp"
 void GameScene::respawn() {
  player->setPosition(ls::getTilePosition(ls::findTiles(ls::START)[0]));
- player->getCompatibleComponent<ActorMovementComponent>()[0]
+ player->GetCompatibleComponent<ActorMovementComponent>()[0]
             ->setSpeed(150.f);
 
  auto ghost_spawns = ls::findTiles(ls::ENEMY);
@@ -42,7 +42,7 @@ void GameScene::respawn() {
 }
 ```
 
-This makes use of a new function `findTiles()` which we haven't written yet, go an implement it into the level system library. Here's the declaration, you must figure out the implementation.
+This makes use of a new function `findTiles()` which we haven't written yet, go and implement it into the level system library. Here's the declaration, you must figure out the implementation.
 
 ```
 //"LevelSystem.h"
@@ -86,7 +86,6 @@ You may think that this is a little over-complicated, why do we need two differe
 
 With our states figured out, we now move onto the code that transitions between them, the ghost 'AI'. Each update() the ghost will need to evaluate if it's time to change state, we will need a few variables to accomplish this (Lines 4 to 13). A switch statement forms the logic flow, starting with the current state. I've left two of the states to complete. 
 
-{% raw %}
 ```cpp
 //cmp_enemy_ai.cpp
 static const Vector2i directions[] = {{1, 0}, {0, 1}, {0, -1}, {-1, 0}};
@@ -137,7 +136,6 @@ void EnemyAIComponent::update(double dt) {
  ActorMovementComponent::update(dt);
 }
 ```
-{% endraw %}
 
 ### Collision
 
@@ -145,7 +143,7 @@ Pacman just isn't Pacman without dangerous ghosts. Detecting when a ghost has co
 
 The approach we are going to take is the most simple, doing the check in the pacman.cpp Update().
 
-For this to work we need to keep a reference to both the player and the ghosts. the game scene does have an EntityList which contains both, and so we could iterate through that. But wouldn't it just be easier if we did this?
+For this to work we need to keep a reference to both the player and the ghosts. The game scene does have an EntityList which contains both, and so we could iterate through that. But wouldn't it just be easier if we did this?
 
 ```cpp
 //"pacman.cpp"

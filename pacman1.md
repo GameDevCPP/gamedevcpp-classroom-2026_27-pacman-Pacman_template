@@ -32,7 +32,7 @@ This lab is where our game code starts to look more like a game *engine*. This i
 
 Games will have thousands of Entity's in flight, keeping them all in one global vector is not a good idea. Having multiple lists - relevant to their use is a better idea. This is a topic that strays instantly into optimizations, which really depend on the game you are making.
 
-What we are going to go for in this lab is collating all the entities by the scene/level they are in. for pacman, we will just have two scenes: `Game` and `Menu`.
+What we are going to go for in this lab is collating all the entities by the scene/level they are in. For Pacman, we will just have two scenes: `Game` and `Menu`.
 
 To move pacman to this paradigm is not going to take much of a change in code. Here's it is:
 
@@ -49,7 +49,7 @@ The implementation of the two functions do exactly what you would expect, loop t
 
 You may be wondering why we even bothered doing this. We took simple code and made it more complex.
 
-The point is to move Entity management logic to a more appropriate place. This allows us to split our code into that we can expand upon and re-use later. This is the first small step on a big journey.
+The point is to move Entity management logic to a more appropriate place. This allows us to split our code into parts that we can expand upon and re-use later. This is the first small step on a big journey.
 
 ### Render system
 
@@ -63,11 +63,11 @@ Our Render system will have a simplified Render() function that will take in a s
 
 The big difference here is that things won't be rendered immediately. The list will be built up of objects as each Render() function is called on all the Entities.
 
-Once this process completed, we sent it all to SFML all at once.
+Once this process is completed, we send it all to SFML all at once.
 
-The benefits to this is that we can keep track of how many things we are rendering per frame easily. More importantly it allows us to do optimisations. If z-order were important we could re-order the list to draw background objects first. Or do some form of debug-culling to stop certain object types of rendering. All useful stuff.
+The benefit of this is that we can keep track of how many things we are rendering per frame easily. More importantly it allows us to do optimisations. If z-order were important we could re-order the list to draw background objects first. Or do some form of debug-culling to stop certain object types from rendering. All useful stuff.
 
-Again, if we were working with OpenGL or a more complex render system, this is were we would do some serious work. The reality is that SFML does almost everything for us so we don' actually have much to do here.
+Again, if we were working with OpenGL or a more complex render system, this is where we would do some serious work. The reality is that SFML does almost everything for us so we don't actually have much to do here.
 
 ```cpp
 //system_renderer.h
@@ -120,7 +120,7 @@ void Renderer::render() {
 void Renderer::queue(const sf::Drawable *s) { sprites.push(s); }
 ```
 
-All that's left to do is Initialise the system from main.cpp, and call Renderer::render(); a the end of the main render() call.
+All that's left to do is Initialise the system from main.cpp, and call Renderer::render(); at the end of the main render() call.
 
 Now whenever we need to render anything we can call something like.
 
@@ -129,7 +129,7 @@ Renderer::queue(&text);
 ```
 
 
-You might need to use .get() on the unique_ptr in your player or ghost.cpp if you are following along correctly!
+You might need to use .get() on the shared_ptr in your player or ghost.cpp if you are following along correctly!
 
 ## Scene Management
 
@@ -160,7 +160,7 @@ protected:
 hint: Here's the base Scene render(). You should be able to define the other functions yourself.
 
 ```cpp
-//pacman.cpp
+//scene.cpp
 void Scene::render() { _ents.render(); }
 ```
 
@@ -314,7 +314,7 @@ Make sure you have got here, and everything is working so far without any errors
 
 Okay... but do you get what is going on right now? Because I bet a few of you are utterly confused. So, let's summarise this process a little, and have a brief chat about why it's important. Second thing first: why is it important?
 
-Put simply, we can now create and manage scenes incredibly easily. If you've every made anything in a games engine you'll know how important scenes are, almost every single game is broken up into distinct scenes which have their own entities, sounds, textures, models etc. Often this'll be a menu scene and one scene per level, but it depends on how the game is made. But, in the end, they all have the same basic loop: load things, loop through updating and rendering until some end point, unload the things we loaded. Sound familiar? What did we define in our scene.cpp file? load(), update(), render()... but don't forget we have a constructor and deconstuctor too where we can unload things.
+Put simply, we can now create and manage scenes incredibly easily. If you've every made anything in a games engine you'll know how important scenes are, almost every single game is broken up into distinct scenes which have their own entities, sounds, textures, models etc. Often this'll be a menu scene and one scene per level, but it depends on how the game is made. But, in the end, they all have the same basic loop: load things, loop through updating and rendering until some end point, unload the things we loaded. Sound familiar? What did we define in our scene.cpp file? load(), update(), render()... but don't forget we have a constructor and destructor too where we can unload things.
 
 What's nice about the way we've done it, however, is that the main gameplay loop doesn't have to care about what scene is currently running - it just calls the right functions at the right time on whatever scene is currently active. What is double nice, is that to change which scene is running (i.e. to change from the menu to the game, or between levels) we just swap out which scene is currently 'active'... and that's really it. Everything else just works because of clever use of inheritance, polymorphism, and all those other nice OO things.
 
