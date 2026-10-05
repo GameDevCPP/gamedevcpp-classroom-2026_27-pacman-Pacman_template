@@ -5,6 +5,8 @@ These notes are a minor modification of Napier Games Engineering course
 # Pacman - part 1
 or: Engine Abstraction and the Entity Component Model
 
+![Pacman gameplay demo](assets/pacman_demo.gif)
+
 
 
 ## First Steps
